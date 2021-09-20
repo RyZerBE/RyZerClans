@@ -3,11 +3,15 @@ package baubolp.ryzerbe.ryzerclans.mysql;
 import baubolp.ryzerbe.ryzerclans.RyZerClans;
 import baubolp.ryzerbe.ryzerclans.language.Language;
 import baubolp.ryzerbe.ryzerclans.language.LanguageProvider;
+import baubolp.ryzerbe.ryzerclans.util.ClanInfo;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class DatabaseManager {
@@ -16,10 +20,25 @@ public class DatabaseManager {
         Statement statement = RyZerClans.getConnection().getStatement();
         try {
             statement.execute("CREATE TABLE IF NOT EXISTS Clans(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, cwchannel TEXT, language int(2))");
-            statement.execute("CREATE TABLE IF NOT EXISTS CWNotify(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, clan_name TEXT");
+            statement.execute("CREATE TABLE IF NOT EXISTS CWNotify(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, clan_name TEXT)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setClanWarChannel(String guild, String textChannelId) {
+        if (validClanDiscord(guild)) {
+            Statement statement = RyZerClans.getConnection().getStatement();
+            try {
+                statement.execute("UPDATE `Clans` SET cwchannel='" + textChannelId + "' WHERE guild='" + guild + "'");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void resetClanWarChannel(String guild) {
+        setClanWarChannel(guild, "");
     }
 
     public boolean validClanDiscord(String guild) {
@@ -38,7 +57,7 @@ public class DatabaseManager {
             LanguageProvider.clanLanguage.put(guild, Language.GERMAN);
             Statement statement = RyZerClans.getConnection().getStatement();
             try {
-                statement.execute("INSERT INTO `Clans`(`guild`, `cwchannel`, `clans`, `language`) VALUES ('" + guild + "', '', '', '" + Language.GERMAN + "')");
+                statement.execute("INSERT INTO `Clans`(`guild`, `cwchannel`, `language`) VALUES ('" + guild + "', '', '" + Language.GERMAN + "')");
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -157,5 +176,82 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void setLanguage(String guild, Language language) {
+        Statement statement = RyZerClans.getConnection().getStatement();
+        try {
+            statement.execute("UPDATE Clans SET language='" + language + "' WHERE guild='" + guild + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<TextChannel> getAllClanWarChannels() {
+        Statement statement = RyZerClans.getConnection().getStatement();
+        ArrayList<TextChannel> channels = new ArrayList<TextChannel>();
+        try {
+            ResultSet result = statement.executeQuery("SELECT cwchannel, guild FROM Clans");
+            while (result.next()) {
+                if (result.getString("cwchannel").equals("")) continue;
+
+                String guildId = result.getString("guild");
+                String textChannelId = result.getString("cwchannel");
+                Guild guild = RyZerClans.getJda().getGuildById(guildId);
+                if (guild == null) continue;
+                TextChannel channel = guild.getTextChannelById(textChannelId);
+                if (channel == null) continue;
+                channels.add(channel);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return channels;
+    }
+
+    public ClanInfo fetchClanInfo(String clanName) {
+        Statement statement = RyZerClans.getClanConnection().getStatement();
+        try {
+            ResultSet result = statement.executeQuery("SELECT * FROM Clans WHERE clan_name='" + clanName + "'");
+            if(result.next()) {
+                String clanTag = result.getString("clan_tag");
+                String created = result.getString("created");
+                String description = result.getString("message");
+                int elo = result.getInt("elo");
+                int stateId = result.getInt("status");
+                HashMap<String, String> members = new HashMap<>();
+                ResultSet memberResult = statement.executeQuery("SELECT * FROM ClanUsers WHERE clan_name='" + clanName + "'");
+                while(memberResult.next()) {
+                    String playerName = memberResult.getString("playername");
+                    String role = memberResult.getString("role");
+                    members.put(playerName, role);
+                }
+
+                return new ClanInfo(clanName, clanTag, created, members, description, elo, 10, stateId); //todo: rank
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public String fetchTop10Clans() {
+        Statement statement = RyZerClans.getClanConnection().getStatement();
+        StringBuilder builder = new StringBuilder();
+        try {
+            ResultSet result = statement.executeQuery("SELECT clanname, elo FROM Clans ORDER BY elo DESC LIMIT 10");
+
+            int place = 0;
+            while (result.next()) {
+                String clan = result.getString("clanname");
+                String elo = result.getString("elo");
+                builder.append(++place).append(". ").append(clan).append("\n **Elo:** ").append(elo).append("\n");
+            }
+            return builder.toString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "TOP 10 ARE NOT AVAILABLE!";
     }
 }

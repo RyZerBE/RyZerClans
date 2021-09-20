@@ -1,5 +1,7 @@
 package baubolp.cloudbridge.bot.Packets;
 
+import baubolp.ryzerbe.ryzerclans.RyZerClans;
+import baubolp.ryzerbe.ryzerclans.mysql.DatabaseManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.json.simple.JSONObject;
@@ -33,12 +35,13 @@ public class ClanWarResultPacket extends DataPacket {
         String loser = jsonObject.get("loser").toString();
         int elo = Integer.parseInt(jsonObject.get("elo").toString());
 
-       /* for (TextChannel channel : MySQLProvider.getAllCWChannels()) {
-            if (MySQLProvider.isAdded(channel.getGuild().getId(), winner) || MySQLProvider.isAdded(channel.getGuild().getId(), loser)) {
+        DatabaseManager databaseManager = RyZerClans.getDatabaseManager();
+        for (TextChannel channel : databaseManager.getAllClanWarChannels()) {
+            if (databaseManager.isClanNotified(channel.getGuild().getId(), winner) || databaseManager.isClanNotified(channel.getGuild().getId(), loser)) {
                 EmbedBuilder embedBuilder = getClanWarSolutionEmbed(winner, loser, String.valueOf(elo), arenaName, playTime, String.join(", ", lineUp1.split(":")), String.join(", ", lineUp2.split(":")));
                 channel.sendMessage(embedBuilder.build()).queue();
             }
-        }*/
+        }
     }
 
     private EmbedBuilder getClanWarSolutionEmbed(String winner, String loser, String elo, String map, String duration, String lineup1, String lineup2) {
@@ -49,7 +52,7 @@ public class ClanWarResultPacket extends DataPacket {
         builder.setTitle(winner + " vs " + loser);
         builder.setTimestamp(Instant.now());
         builder.addField(":first_place: Winner", winner + " (+ "+ elo +" Elo)", false);
-        builder.addField(":second_place: Loser", loser + " (- "+ elo +" Elo)", false);
+        builder.addField(":second_place: Loser", loser + " (- "+ elo +" Elo)", true);
         builder.addField(":family_man_boy_boy: Lineup of " + winner, lineup1, false);
         builder.addField(":family_man_boy_boy: Lineup of " + loser, lineup2, false);
         builder.addField(":park: Map", map, true);

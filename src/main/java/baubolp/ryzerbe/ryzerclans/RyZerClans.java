@@ -2,9 +2,13 @@ package baubolp.ryzerbe.ryzerclans;
 
 import baubolp.cloudbridge.bot.CloudBridge;
 import baubolp.ryzerbe.ryzerclans.command.CommandMap;
-import baubolp.ryzerbe.ryzerclans.command.defaults.ClanNotifyCommand;
+import baubolp.ryzerbe.ryzerclans.command.defaults.*;
 import baubolp.ryzerbe.ryzerclans.language.Language;
 import baubolp.ryzerbe.ryzerclans.language.LanguageProvider;
+import baubolp.ryzerbe.ryzerclans.listener.CommandListener;
+import baubolp.ryzerbe.ryzerclans.listener.GuildJoinListener;
+import baubolp.ryzerbe.ryzerclans.listener.GuildLeaveListener;
+import baubolp.ryzerbe.ryzerclans.listener.GuildTextChannelDeleteListener;
 import baubolp.ryzerbe.ryzerclans.mysql.DatabaseConnection;
 import baubolp.ryzerbe.ryzerclans.mysql.DatabaseManager;
 import baubolp.ryzerbe.ryzerclans.util.CommandCooldown;
@@ -14,6 +18,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
 import javax.security.auth.login.LoginException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class RyZerClans {
 
@@ -55,6 +61,22 @@ public class RyZerClans {
         }
 
         try {
+            ResultSet rset = connection.getStatement().executeQuery("SELECT * FROM Clans");
+
+            while(rset.next()) {
+                Language language;
+                if(rset.getString("language").equals("GERMAN")) {
+                    language = Language.GERMAN;
+                }else {
+                    language = Language.ENGLISH;
+                }
+                LanguageProvider.clanLanguage.put(rset.getString("guild"), language);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
             cloudBridge.start("RyZerClans");
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +85,23 @@ public class RyZerClans {
         getDatabaseManager().createTables();
         languageProvider.load(Language.GERMAN);
         languageProvider.load(Language.ENGLISH);
-        getCommandMap().registerCommands(new ClanNotifyCommand());
+        getCommandMap().registerCommands(
+                new ClanNotifyCommand(),
+                new ClanInfoCommand(),
+                new ClanWarChannelCommand(),
+                new DiscordCommand(),
+                new HelpCommand(),
+                new LanguageCommand(),
+                new TopTenCommand(),
+                new UpdatelogCommand()
+        );
+
+        jdaBuilder.addEventListeners(
+                new CommandListener(),
+                new GuildJoinListener(),
+                new GuildLeaveListener(),
+                new GuildTextChannelDeleteListener()
+        );
     }
 
     public static CloudBridge getCloudBridge() {
@@ -88,10 +126,6 @@ public class RyZerClans {
 
     public static CommandCooldown getCooldown() {
         return cooldown;
-    }
-
-    public static String getPrefix() {
-        return prefix;
     }
 
     public static LanguageProvider getLanguageProvider() {
