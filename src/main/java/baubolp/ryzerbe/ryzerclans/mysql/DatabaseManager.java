@@ -19,7 +19,7 @@ public class DatabaseManager {
     public void createTables() {
         Statement statement = RyZerClans.getConnection().getStatement();
         try {
-            statement.execute("CREATE TABLE IF NOT EXISTS Clans(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, cwchannel TEXT, language int(2))");
+            statement.execute("CREATE TABLE IF NOT EXISTS Clans(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, cwchannel TEXT, language varchar(32))");
             statement.execute("CREATE TABLE IF NOT EXISTS CWNotify(id INTEGER NOT NULL KEY AUTO_INCREMENT, guild TEXT, clan_name TEXT)");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -227,7 +227,14 @@ public class DatabaseManager {
                     members.put(playerName, role);
                 }
 
-                return new ClanInfo(clanName, clanTag, created, members, description, elo, 10, stateId); //todo: rank
+                int rank = 1;
+                ResultSet rankResult = statement.executeQuery("SELECT clan_name, elo FROM Clans ORDER BY elo DESC");
+                while(rankResult.next()) {
+                    if(rankResult.getString("clan_name").equals(clanName)) break;
+                    rank++;
+                }
+
+                return new ClanInfo(clanName, clanTag, created, members, description, elo, rank, stateId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -240,18 +247,18 @@ public class DatabaseManager {
         Statement statement = RyZerClans.getClanConnection().getStatement();
         StringBuilder builder = new StringBuilder();
         try {
-            ResultSet result = statement.executeQuery("SELECT clanname, elo FROM Clans ORDER BY elo DESC LIMIT 10");
+            ResultSet result = statement.executeQuery("SELECT clan_name, elo FROM Clans ORDER BY elo DESC LIMIT 10");
 
             int place = 0;
             while (result.next()) {
-                String clan = result.getString("clanname");
+                String clan = result.getString("clan_name");
                 String elo = result.getString("elo");
                 builder.append(++place).append(". ").append(clan).append("\n **Elo:** ").append(elo).append("\n");
             }
             return builder.toString();
         } catch (SQLException e) {
             e.printStackTrace();
+            return e.getMessage();
         }
-        return "TOP 10 ARE NOT AVAILABLE!";
     }
 }

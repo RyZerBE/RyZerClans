@@ -61,7 +61,7 @@ public class ClanNotifyCommand extends Command {
         String clan = args[2];
         DatabaseManager databaseManager = RyZerClans.getDatabaseManager();
         String guildID = channel.getGuild().getId();
-        if(args[0].equals("add")) {
+        if(args[1].equals("add")) {
             if(databaseManager.isClanNotified(guildID, "*")) {
                 EmbedBuilder embedBuilder = new EmbedBuilder();
                 embedBuilder.setAuthor("Error");
@@ -89,7 +89,7 @@ public class ClanNotifyCommand extends Command {
 
                 databaseManager.addClanNotify(guildID, "*");
                 EmbedBuilder embedBuilder = new EmbedBuilder();
-                embedBuilder.setAuthor("Error");
+                embedBuilder.setAuthor("Successfully");
                 embedBuilder.setTitle(RyZerClans.getLanguageProvider().getTranslation(RyZerClans.getLanguageProvider().getClanLangauage(label.getGuild().getId()), "global-notifications-activated"));
                 embedBuilder.setTimestamp(Instant.now());
                 embedBuilder.setThumbnail("https://media.discordapp.net/attachments/693494109842833469/731231356092284969/RYZER_png.png?width=703&height=703");
@@ -129,7 +129,7 @@ public class ClanNotifyCommand extends Command {
                 channel.sendMessage(embedBuilder.build()).queue();
                 databaseManager.addClanNotify(guildID, clan);
             }
-        }else if(args[0].equals("remove")) {
+        }else if(args[1].equals("remove")) {
             if(clan.equals("*")) {
                 databaseManager.removeAllClanNotifies(guildID);
                 EmbedBuilder embedBuilder = new EmbedBuilder();

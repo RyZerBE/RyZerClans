@@ -46,13 +46,25 @@ public class LanguageCommand extends Command {
             return;
         }
 
+        if(args.length < 2) {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setAuthor("Error");
+            embedBuilder.setTitle(";language <deutsch|english>");
+            embedBuilder.setColor(Color.RED);
+            embedBuilder.setTimestamp(Instant.now());
+            embedBuilder.setThumbnail("https://media.discordapp.net/attachments/693494109842833469/731231356092284969/RYZER_png.png?width=703&height=703");
+            embedBuilder.setFooter("RyZerBE", "https://media.discordapp.net/attachments/693494109842833469/730816117311930429/RYZER_Network.png?width=703&height=703");
+            channel.sendMessage(embedBuilder.build()).queue();
+            return;
+        }
+
         DatabaseManager databaseManager = RyZerClans.getDatabaseManager();
         RyZerClans.getCooldown().add(sender.getId());
-        if(args[1].toLowerCase().equals("deutsch")) {
+        if(args[1].equalsIgnoreCase("deutsch")) {
             LanguageProvider.clanLanguage.remove(channel.getGuild().getId());
             LanguageProvider.clanLanguage.put(channel.getGuild().getId(), Language.GERMAN);
             databaseManager.setLanguage(channel.getGuild().getId(), Language.GERMAN);
-        }else if(args[1].toLowerCase().equals("english")) {
+        }else if(args[1].equalsIgnoreCase("english")) {
             LanguageProvider.clanLanguage.remove(channel.getGuild().getId());
             LanguageProvider.clanLanguage.put(channel.getGuild().getId(), Language.ENGLISH);
             databaseManager.setLanguage(channel.getGuild().getId(), Language.ENGLISH);

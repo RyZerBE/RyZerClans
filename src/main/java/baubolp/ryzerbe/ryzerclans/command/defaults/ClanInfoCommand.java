@@ -68,10 +68,10 @@ public class ClanInfoCommand extends Command {
 
         embedBuilder.setTimestamp(Instant.now());
         String clanInfoString = "__**Created:**__ " + clanInfo.getCreatedDate() +
-                "__**Elo:**__ " + clanInfo.getElo() +
-                "__**Rank:**__ " + clanInfo.getRank() +
-                "__**State:**__ " + state +
-                clanInfo.getDescription();
+                "\n__**Elo:**__ " + clanInfo.getElo() +
+                "\n__**Rank:**__ " + clanInfo.getRank() +
+                "\n__**State:**__ " + state +
+                "\n" + clanInfo.getDescription();
 
         StringBuilder members = new StringBuilder();
         StringBuilder mods = new StringBuilder();
@@ -92,8 +92,16 @@ public class ClanInfoCommand extends Command {
         });
         embedBuilder.setDescription(clanInfoString);
         embedBuilder.addField("__**Leader**__", leader.toString(), true);
-        embedBuilder.addField("__**Moderator**__", mods.toString(), true);
-        embedBuilder.addField("__**Members(" + clanInfo.getMembers().size() +")**__", members.toString(), false);
+        if(mods.length() == 0) {
+            embedBuilder.addField("__**Moderator**__", "/", true);
+        }else {
+            embedBuilder.addField("__**Moderator**__", mods.toString(), true);
+        }
+        if(leader.length() == 0) {
+            embedBuilder.addField("__**Members(" + clanInfo.getMembers().size() +")**__", "/", false);
+        }else {
+            embedBuilder.addField("__**Members(" + clanInfo.getMembers().size() +")**__", members.toString(), false);
+        }
         embedBuilder.setThumbnail("https://media.discordapp.net/attachments/693494109842833469/731231356092284969/RYZER_png.png?width=703&height=703");
         embedBuilder.setFooter("RyZerBE", "https://media.discordapp.net/attachments/693494109842833469/730816117311930429/RYZER_Network.png?width=703&height=703");
         channel.sendMessage(embedBuilder.build()).queue();

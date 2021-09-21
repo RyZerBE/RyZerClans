@@ -50,6 +50,23 @@ public class RyZerClans {
         jdaBuilder.setActivity(Activity.playing("with Clans"));
         jdaBuilder.setAutoReconnect(true);
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
+        getCommandMap().registerCommands(
+                new ClanNotifyCommand(),
+                new ClanInfoCommand(),
+                new ClanWarChannelCommand(),
+                new DiscordCommand(),
+                new HelpCommand(),
+                new LanguageCommand(),
+                new TopTenCommand(),
+                new UpdatelogCommand()
+        );
+
+        jdaBuilder.addEventListeners(
+                new CommandListener(),
+                new GuildJoinListener(),
+                new GuildLeaveListener(),
+                new GuildTextChannelDeleteListener()
+        );
 
         try {
             jda = jdaBuilder.build();
@@ -85,23 +102,6 @@ public class RyZerClans {
         getDatabaseManager().createTables();
         languageProvider.load(Language.GERMAN);
         languageProvider.load(Language.ENGLISH);
-        getCommandMap().registerCommands(
-                new ClanNotifyCommand(),
-                new ClanInfoCommand(),
-                new ClanWarChannelCommand(),
-                new DiscordCommand(),
-                new HelpCommand(),
-                new LanguageCommand(),
-                new TopTenCommand(),
-                new UpdatelogCommand()
-        );
-
-        jdaBuilder.addEventListeners(
-                new CommandListener(),
-                new GuildJoinListener(),
-                new GuildLeaveListener(),
-                new GuildTextChannelDeleteListener()
-        );
     }
 
     public static CloudBridge getCloudBridge() {
