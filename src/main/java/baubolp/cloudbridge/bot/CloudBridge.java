@@ -5,6 +5,7 @@ import baubolp.cloudbridge.bot.Packets.BotConnectPacket;
 import baubolp.cloudbridge.bot.Packets.BotDisconnectPacket;
 import baubolp.cloudbridge.bot.Packets.BotKeepAlivePacket;
 import baubolp.cloudbridge.bot.Packets.ClanWarResultPacket;
+import baubolp.ryzerbe.ryzerclans.RyZerClans;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,6 +22,8 @@ public class CloudBridge {
     private boolean start = false;
     private static Cloud cloud = null;
     private static String botName;
+
+    private int tryToConnect = 0;
 
     public void start(String bot) throws Exception {
         if(start) {
@@ -115,7 +118,13 @@ public class CloudBridge {
                     System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
                     System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
                     System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
-                    requestCloud();
+                    tryToConnect++;
+                    if(tryToConnect <= 3) {
+                        requestCloud();
+                    }else {
+                        tryToConnect = 0;
+                        RyZerClans.getJda().shutdown();
+                    }
                     return;
                 }
                 Cloud cloud = CloudBridge.getCloud();
