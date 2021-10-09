@@ -55,7 +55,6 @@ public class CloudBridge {
         botName = bot;
         start = true;
         registerPackets();
-        createClient("5.181.151.61", 7000);
         requestCloud();
         startChecks();
         startRequestTask();
@@ -85,6 +84,7 @@ public class CloudBridge {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
+                if(CloudBridge.getClient() == null) return;
                 for(String request : new ArrayList<>(CloudBridge.getClient().getQueue())) {
                     CloudBridge.getPacketHandler().handlePacket(PacketHandler.handleJsonObject(PacketHandler.getPacketNameByRequest(request), request));
                     CloudBridge.getClient().getQueue().remove(request);
@@ -95,6 +95,7 @@ public class CloudBridge {
 
     private void requestCloud() {
         try {
+            createClient("5.181.151.61", 7000);
             Socket socket = CloudBridge.getClient().getSocket();
 
             BotConnectPacket cloudPacket = new BotConnectPacket();
@@ -104,7 +105,7 @@ public class CloudBridge {
             bufferedWriter.write(cloudPacket.encode());
             bufferedWriter.newLine();
             bufferedWriter.flush();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -116,8 +117,6 @@ public class CloudBridge {
             public void run() {
                 if(CloudBridge.getCloud() == null) {
                     System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
-                    System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
-                    System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
                     tryToConnect++;
                     if(tryToConnect <= 3) {
                         requestCloud();
@@ -125,6 +124,7 @@ public class CloudBridge {
                         tryToConnect = 0;
                         System.out.println("Verbindungsversuche fehlgeschlagen!");
                         RyZerClans.getJda().shutdown();
+                        System.exit(0);
                     }
                     return;
                 }
@@ -136,8 +136,6 @@ public class CloudBridge {
 
                     cloud.setKeepAliveChecks(cloud.getKeepAliveChecks() + 1);
                 }else if(cloud.getKeepAliveChecks() > 1) {
-                    System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
-                    System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
                     System.out.println("Es konnte keine Verbindung zur Cloud hergestellt werden.");
                     client = CloudBridge.getClient().restartConnection();
                 }else {

@@ -63,7 +63,7 @@ public class Client extends Thread {
     public void stopClient() {
         this.stop = true;
         try {
-            this.socket.close();
+            if(this.socket != null) this.socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
