@@ -32,7 +32,7 @@ public class RyZerClans {
     private static LanguageProvider languageProvider;
     private static DatabaseManager databaseManager;
     private static CloudBridge cloudBridge;
-    private static CommandCooldown cooldown = new CommandCooldown(4000);
+    private static final CommandCooldown cooldown = new CommandCooldown(4000);
 
     public static void main(String[] args) {
         cloudBridge = new CloudBridge();
@@ -47,7 +47,7 @@ public class RyZerClans {
 
     private static void boot() {
         JDABuilder jdaBuilder = JDABuilder.createDefault("NzQ5MzgwMTUxNDM1MDY3NTgz.X0rIpg.8_-GBu9l9SeEx5Cd7DdO24AhFOs");
-        jdaBuilder.setActivity(Activity.playing("with Clans"));
+        jdaBuilder.setActivity(Activity.playing("with Clans of RyZerBE"));
         jdaBuilder.setAutoReconnect(true);
         jdaBuilder.setStatus(OnlineStatus.ONLINE);
         getCommandMap().registerCommands(
@@ -100,6 +100,7 @@ public class RyZerClans {
         }
 
         getDatabaseManager().createTables();
+        getDatabaseManager().initClanDiscords();
         languageProvider.load(Language.GERMAN);
         languageProvider.load(Language.ENGLISH);
     }

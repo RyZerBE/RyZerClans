@@ -37,6 +37,15 @@ public class DatabaseManager {
         }
     }
 
+    public void initClanDiscords() {
+        for(Guild guild : RyZerClans.getJda().getGuilds()) {
+            if(!validClanDiscord(guild.getId())) {
+                registerClan(guild.getId());
+                System.out.println(guild.getName() + " wurde nachträglich in die Datenbank eingetragen. Reason: BOT ADDED TO DISCORD IN DOWNTIME");
+            }
+        }
+    }
+
     public void resetClanWarChannel(String guild) {
         setClanWarChannel(guild, "");
     }
