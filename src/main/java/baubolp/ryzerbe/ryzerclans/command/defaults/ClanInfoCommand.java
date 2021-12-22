@@ -46,6 +46,16 @@ public class ClanInfoCommand extends Command {
 
         RyZerClans.getCooldown().add(sender.getId());
         ClanInfo clanInfo = RyZerClans.getDatabaseManager().fetchClanInfo(args[1]);
+        if(clanInfo == null) {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle(RyZerClans.getLanguageProvider().getTranslation(RyZerClans.getLanguageProvider().getClanLangauage(label.getGuild().getId()), "clan-not-found"));
+            embedBuilder.setAuthor("RyZerBE");
+            embedBuilder.setTimestamp(Instant.now());
+            embedBuilder.setThumbnail("https://media.discordapp.net/attachments/693494109842833469/731231356092284969/RYZER_png.png?width=703&height=703");
+            embedBuilder.setFooter("RyZerBE", "https://media.discordapp.net/attachments/693494109842833469/730816117311930429/RYZER_Network.png?width=703&height=703");
+            channel.sendMessage(embedBuilder.build()).queue();
+            return;
+        }
 
         String state;
         switch (clanInfo.getState()) {
