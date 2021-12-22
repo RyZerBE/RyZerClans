@@ -31,7 +31,7 @@ public class LanguageProvider  {
             de_translations.put("help-clan-notify", "Stelle ein, für welche Clans Matchergebnisse im ClanWar Channel erscheinen sollen.");
             de_translations.put("help-discord", "Bugs? Feedback? Der offizielle RyZerBE Discord");
             de_translations.put("help-help", "Du erhältst eine Liste meiner Commands.");
-            de_translations.put("help-clan-info", "Erhalte Informationen über einen Clan.");
+            de_translations.put("help-clan-info", "Erhalte Informationen über einen Clan");
             de_translations.put("successfully-removed-all-clans", "Du hast erfolgreich alle Clans entfernt.");
             de_translations.put("successfully-removed-clan", "Der Clan wurde erfolgreich entfernt.");
             de_translations.put("clanwar-channel-set", "Du hast erfolgreich den ClanWar Channel gesetzt.");
@@ -39,6 +39,7 @@ public class LanguageProvider  {
             de_translations.put("clanwar-channel-deleted", "Der ClanWar Channel wurde gelöscht. Matchergebnisse werden nun nicht mehr angezeigt!");
             de_translations.put("no-matches-running", "Aktuell wird kein ClanWar gespielt.");
             de_translations.put("help-matches", "Alle laufenden ClanWar Matches");
+            de_translations.put("clan-not-found", "Der Clan existiert nicht!");
         }else if(language == Language.ENGLISH) {
             en_translations.put("stop-command-spamming", "Do a small break after sending of commands..");
             en_translations.put("no-perms", "You have no permissions to use this command!");
