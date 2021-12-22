@@ -37,6 +37,7 @@ public class ClanWarResultPacket extends DataPacket {
 
         DatabaseManager databaseManager = RyZerClans.getDatabaseManager();
         for (TextChannel channel : databaseManager.getAllClanWarChannels()) {
+            if(!channel.canTalk()) continue;
             if (databaseManager.isClanNotified(channel.getGuild().getId(), winner) || databaseManager.isClanNotified(channel.getGuild().getId(), loser)) {
                 EmbedBuilder embedBuilder = getClanWarSolutionEmbed(winner, loser, String.valueOf(elo), arenaName, playTime, String.join(", ", lineUp1.split(":")), String.join(", ", lineUp2.split(":")));
                 channel.sendMessage(embedBuilder.build()).queue();

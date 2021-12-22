@@ -44,8 +44,8 @@ public class ClanNotifyCommand extends Command {
             channel.sendMessage(embedBuilder.build()).queue();
             return;
         }
-
         RyZerClans.getCooldown().add(sender.getId());
+        if(!channel.canTalk()) return;
 
         if(args.length < 3) {
             EmbedBuilder embedBuilder = new EmbedBuilder();

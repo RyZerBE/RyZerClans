@@ -30,6 +30,8 @@ public class TopTenCommand extends Command {
         }
 
         RyZerClans.getCooldown().add(sender.getId());
+        if(!channel.canTalk()) return;
+
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setAuthor("RyZerBE");
         embedBuilder.setTitle("TOP 10 BY ELO");

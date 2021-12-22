@@ -19,6 +19,7 @@ public class HelpCommand extends Command {
 
     @Override
     public void execute(Member sender, TextChannel channel, String[] args, Message label) {
+        if(!channel.canTalk()) return;
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setAuthor("Help");
         embedBuilder.setTitle(RyZerClans.getLanguageProvider().getTranslation(RyZerClans.getLanguageProvider().getClanLangauage(label.getGuild().getId()), "list-of-commands"));

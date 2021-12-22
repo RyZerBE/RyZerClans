@@ -15,6 +15,7 @@ public class DiscordCommand extends Command {
 
     @Override
     public void execute(Member sender, TextChannel channel, String[] args, Message label) {
+        if(!channel.canTalk()) return;
         channel.sendMessage("**Discord:** https://discord.ryzer.be/").queue();
     }
 

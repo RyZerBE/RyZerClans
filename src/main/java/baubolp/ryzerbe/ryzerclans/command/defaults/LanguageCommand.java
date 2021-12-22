@@ -45,6 +45,8 @@ public class LanguageCommand extends Command {
             channel.sendMessage(embedBuilder.build()).queue();
             return;
         }
+        if(!channel.canTalk()) return;
+
 
         if(args.length < 2) {
             EmbedBuilder embedBuilder = new EmbedBuilder();

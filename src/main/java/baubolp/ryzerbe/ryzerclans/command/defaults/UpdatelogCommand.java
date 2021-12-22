@@ -21,6 +21,8 @@ public class UpdatelogCommand extends Command {
     public void execute(Member sender, TextChannel channel, String[] args, Message label) {
         if(!sender.getUser().getId().equals("394479414051864576")) return;
         if(args.length < 2) return;
+        if(!channel.canTalk()) return;
+
 
         StringBuilder builder = new StringBuilder();
         for(String message : args){

@@ -46,6 +46,8 @@ public class ClanWarChannelCommand extends Command {
         }
 
         RyZerClans.getCooldown().add(sender.getId());
+        if(!channel.canTalk()) return;
+
         if(args.length < 2 || label.getMentionedChannels().size() == 0 || label.getMentionedChannels().size() > 1) {
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setAuthor("Error");
